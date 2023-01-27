@@ -1,4 +1,4 @@
-FROM golang:1.16.5 AS builder
+FROM golang:1-alpine AS builder
 
 ENV GOFLAGS="-mod=vendor"
 
