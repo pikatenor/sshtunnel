@@ -1,4 +1,4 @@
-FROM golang:1-alpine AS builder
+FROM golang:1 AS builder
 
 ENV GOFLAGS="-mod=vendor"
 
@@ -12,6 +12,9 @@ COPY . ./
 RUN go mod vendor
 RUN go build --tags netgo --ldflags 'extflags=-static' -o sshtunnel ./cmd/tunnel/main.go
 
-FROM alpine:latest
+FROM amazon/aws-cli
+RUN curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm" -o "/tmp/session-manager-plugin.rpm" \
+ && yum install -y /tmp/session-manager-plugin.rpm \
+ && rm /tmp/session-manager-plugin.rpm
 COPY --from=builder /src/sshtunnel /
 ENTRYPOINT ["/sshtunnel"]
